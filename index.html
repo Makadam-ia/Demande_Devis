@@ -38,59 +38,53 @@
         </form>
     </div>
 
-    <script>
-        document.getElementById('urgenceForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const btn = document.querySelector('button');
-            btn.innerText = 'Traitement en cours...';
-            btn.disabled = true;
+<script>
+document.querySelector('form').addEventListener('submit', async function(event) {
+    event.preventDefault();
 
-            const photoInput = document.getElementById('photo');
-            let photoData = null;
+    const nom = document.getElementById('nom').value;
+    const telephone = document.getElementById('telephone').value;
+    const probleme = document.getElementById('probleme').value;
+    const photoInput = document.getElementById('photo');
 
-            if (photoInput.files && photoInput.files[0]) {
-                const file = photoInput.files[0];
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 800;
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        photoData = canvas.toDataURL('image/jpeg', 0.6);
-                        envoyerDonnees(photoData);
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                envoyerDonnees(null);
-            }
+    let photoData = null;
 
-            function envoyerDonnees(photoBase64) {
-                const data = {
-                    nom: document.getElementById('nom').value,
-                    telephone: document.getElementById('telephone').value,
-                    probleme: document.getElementById('probleme').value,
-                    photo: photoBase64
-                };
-
-                fetch('https://portfoliohighgency.app.n8n.cloud/webhook/4a1614a7-25d5-461b-afbf-4e504720d70d', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                }).then(response => {
-                    document.body.innerHTML = '<div class="container"><h3>Alerte transmise. Un technicien analyse la photo et vous rappelle.</h3></div>';
-                }).catch(error => {
-                    btn.innerText = 'Échec réseau. Réessayez.';
-                    btn.disabled = false;
-                });
-            }
+    if (photoInput.files && photoInput.files.length > 0) {
+        photoData = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(photoInput.files[0]);
         });
-    </script>
+    }
+
+    const payload = {
+        nom: nom,
+        telephone: telephone,
+        probleme: probleme,
+        photo: photoData
+    };
+
+    fetch('https://portfoliohighgency.app.n8n.cloud/webhook/4a1614a7-25d5-461b-afbf-4e504720d70d', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        if (response.ok) {
+            alert("Demande envoyée avec succès.");
+            event.target.reset();
+        } else {
+            alert("Erreur lors de l'envoi du formulaire.");
+        }
+    })
+    .catch(error => {
+        console.error("Erreur de transmission :", error);
+        alert("Erreur de connexion au serveur.");
+    });
+});
+</script>
 </body>
 </html>

@@ -42,48 +42,56 @@
 document.querySelector('form').addEventListener('submit', async function(event) {
     event.preventDefault();
 
-    const nom = document.getElementById('nom').value;
-    const telephone = document.getElementById('telephone').value;
-    const probleme = document.getElementById('probleme').value;
-    const photoInput = document.getElementById('photo');
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = "Traitement de l'image...";
+    submitBtn.disabled = true;
 
-    let photoData = null;
+    try {
+        const nom = document.getElementById('nom') ? document.getElementById('nom').value : '';
+        const telephone = document.getElementById('telephone') ? document.getElementById('telephone').value : '';
+        const probleme = document.getElementById('probleme') ? document.getElementById('probleme').value : '';
+        
+        // Ciblage universel du champ d'upload
+        const photoInput = document.querySelector('input[type="file"]');
+        let photoData = null;
 
-    if (photoInput.files && photoInput.files.length > 0) {
-        photoData = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(photoInput.files[0]);
+        if (photoInput && photoInput.files && photoInput.files.length > 0) {
+            photoData = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(photoInput.files[0]);
+            });
+        }
+
+        if (!photoData) {
+            alert("Échec local : L'image n'a pas pu être lue par le navigateur de votre téléphone.");
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+            return; // Interrompt l'envoi pour éviter le crash n8n
+        }
+
+        const payload = { nom, telephone, probleme, photo: photoData };
+
+        const response = await fetch('https://portfoliohighgency.app.n8n.cloud/webhook/4a1614a7-25d5-461b-afbf-4e504720d70d', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
-    }
 
-    const payload = {
-        nom: nom,
-        telephone: telephone,
-        probleme: probleme,
-        photo: photoData
-    };
-
-    fetch('https://portfoliohighgency.app.n8n.cloud/webhook/4a1614a7-25d5-461b-afbf-4e504720d70d', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-    })
-    .then(response => {
         if (response.ok) {
             alert("Demande envoyée avec succès.");
             event.target.reset();
         } else {
-            alert("Erreur lors de l'envoi du formulaire.");
+            alert("Erreur de communication avec le serveur.");
         }
-    })
-    .catch(error => {
-        console.error("Erreur de transmission :", error);
-        alert("Erreur de connexion au serveur.");
-    });
+    } catch (error) {
+        alert("Erreur système : " + error.message);
+    } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
 });
 </script>
 </body>

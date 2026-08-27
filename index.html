@@ -85,13 +85,13 @@ document.querySelector('form').addEventListener('submit', async function(event) 
             });
         }
 
-        const payload = { nom, telephone, probleme, photo: photoData };
+       const payload = { nom, telephone, probleme, photo: photoData };
 
-        const response = await fetch('https://portfoliohighgency.app.n8n.cloud/webhook/4a1614a7-25d5-461b-afbf-4e504720d70d', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+const response = await fetch('/api/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+});
 
         if (response.ok) {
             alert("Demande envoyée avec succès.");

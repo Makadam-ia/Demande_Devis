@@ -13,17 +13,21 @@
         .consigne-photo { font-size: 13px; color: #856404; background-color: #fff3cd; border-left: 4px solid #ffeeba; padding: 10px; margin-top: 5px; border-radius: 4px; }
         input[type="file"] { margin-top: 10px; width: 100%; }
         button { margin-top: 20px; padding: 12px; width: 100%; background: #d9534f; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        .masque { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Demande de Dépannage</h2>
         <form id="urgenceForm">
+            <!-- Champ invisible pour bloquer les robots -->
+            <input type="text" id="robot_check" class="masque" autocomplete="off" tabindex="-1">
+
             <label>Nom du contact :</label>
             <input type="text" id="nom" required>
 
             <label>Numéro de téléphone :</label>
-            <input type="tel" id="telephone" required>
+            <input type="tel" id="telephone" pattern="^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$" title="Format valide requis (ex: 0612345678)" required>
 
             <label>Nature de l'urgence :</label>
             <textarea id="probleme" rows="3" placeholder="Ex: Fuite d'eau, vanne fermée..." required></textarea>
@@ -42,34 +46,43 @@
 document.querySelector('form').addEventListener('submit', async function(event) {
     event.preventDefault();
 
+    if (document.getElementById('robot_check').value !== "") return;
+
     const submitBtn = document.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
-    submitBtn.textContent = "Traitement de l'image...";
+    submitBtn.textContent = "Traitement et envoi...";
     submitBtn.disabled = true;
 
     try {
-        const nom = document.getElementById('nom') ? document.getElementById('nom').value : '';
-        const telephone = document.getElementById('telephone') ? document.getElementById('telephone').value : '';
-        const probleme = document.getElementById('probleme') ? document.getElementById('probleme').value : '';
+        const nom = document.getElementById('nom').value;
+        const telephone = document.getElementById('telephone').value;
+        const probleme = document.getElementById('probleme').value;
         
-        // Ciblage universel du champ d'upload
         const photoInput = document.querySelector('input[type="file"]');
         let photoData = null;
 
-        if (photoInput && photoInput.files && photoInput.files.length > 0) {
+        if (photoInput.files && photoInput.files.length > 0) {
             photoData = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(photoInput.files[0]);
-            });
-        }
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1024;
+                    let width = img.width;
+                    let height = img.height;
 
-        if (!photoData) {
-            alert("Échec local : L'image n'a pas pu être lue par le navigateur de votre téléphone.");
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-            return; // Interrompt l'envoi pour éviter le crash n8n
+                    if (width > MAX_WIDTH) {
+                        height = Math.round((height * MAX_WIDTH) / width);
+                        width = MAX_WIDTH;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+                img.onerror = reject;
+                img.src = URL.createObjectURL(photoInput.files[0]);
+            });
         }
 
         const payload = { nom, telephone, probleme, photo: photoData };
@@ -94,5 +107,7 @@ document.querySelector('form').addEventListener('submit', async function(event) 
     }
 });
 </script>
+</body>
+</html>
 </body>
 </html>

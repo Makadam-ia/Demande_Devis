@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Méthode non autorisée' });
   }
 
-  const n8nWebhookUrl = 'https://https://portfoliohighgency.app.n8n.cloud/webhook/4a1614a7-25d5-461b-afbf-4e504720d70d';
+  const n8nWebhookUrl = 'https://INSERER_URL_WEBHOOK_N8N_PRODUCTION';
 
   try {
     const response = await fetch(n8nWebhookUrl, {
@@ -15,12 +15,14 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
-      throw new Error('Erreur de transmission réseau');
+      const errorText = await response.text();
+      throw new Error(`Erreur n8n (${response.status}): ${errorText}`);
     }
 
     const data = await response.json();
     return res.status(200).json(data);
   } catch (error) {
+    console.error('Erreur API submit:', error.message);
     return res.status(500).json({ error: error.message });
   }
 }

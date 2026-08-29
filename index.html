@@ -3,111 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intervention d'Urgence</title>
+    <title>Demande de Dépannage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; background-color: #f4f4f9; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
-        h2 { color: #333; font-size: 20px; text-align: center; }
-        label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
-        input[type="text"], input[type="tel"], textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .consigne-photo { font-size: 13px; color: #856404; background-color: #fff3cd; border-left: 4px solid #ffeeba; padding: 10px; margin-top: 5px; border-radius: 4px; }
-        input[type="file"] { margin-top: 10px; width: 100%; }
-        button { margin-top: 20px; padding: 12px; width: 100%; background: #d9534f; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
-        .masque { display: none; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            color: #333333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 480px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4b5563;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .alert-box {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #92400e;
+            margin-bottom: 16px;
+        }
+
+        .file-upload-container {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            background-color: #f9fafb;
+            margin-bottom: 24px;
+        }
+
+        .file-upload-container:hover {
+            border-color: #ef4444;
+        }
+
+        .file-upload-container input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-label {
+            font-size: 14px;
+            color: #4b5563;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: #ef4444;
+            color: #ffffff;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            min-height: 48px;
+        }
+
+        .btn-primary:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-retour {
+            background-color: #f1f3f5;
+            color: #495057;
+            border: 1px solid #ced4da;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            min-height: 48px;
+        }
+
+        .btn-retour:hover {
+            background-color: #e2e6ea;
+        }
+
+        #success-container {
+            text-align: center;
+        }
+
+        #success-container p {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1f2937;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+
+    <div class="card" id="form-container">
         <h2>Demande de Dépannage</h2>
-        <form id="urgenceForm">
-            <!-- Champ invisible pour bloquer les robots -->
-            <input type="text" id="robot_check" class="masque" autocomplete="off" tabindex="-1">
-
-            <label>Nom du contact :</label>
-            <input type="text" id="nom" required>
-
-            <label>Numéro de téléphone :</label>
-            <input type="tel" id="telephone" pattern="^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$" title="Format valide requis (ex: 0612345678)" required>
-
-            <label>Nature de l'urgence :</label>
-            <textarea id="probleme" rows="3" placeholder="Ex: Fuite d'eau, vanne fermée..." required></textarea>
-
-            <label>Photo du problème :</label>
-            <div class="consigne-photo">
-                <strong>Important :</strong> Photographiez l'installation complète avec un mètre de recul (tuyaux, raccords). Ne photographiez pas uniquement la flaque d'eau.
+        <form id="form-urgence">
+            <div class="form-group">
+                <label for="nom">Nom du contact :</label>
+                <input type="text" id="nom" required>
             </div>
-            <input type="file" id="photo" accept="image/*" capture="environment">
 
-            <button type="submit">Envoyer l'Alerte</button>
+            <div class="form-group">
+                <label for="telephone">Numéro de téléphone :</label>
+                <input type="tel" id="telephone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="probleme">Nature de l'urgence :</label>
+                <textarea id="probleme" placeholder="Ex: Fuite d'eau, vanne fermée..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Photo du problème :</label>
+                <div class="alert-box">
+                    <strong>Important :</strong> Photographiez l'installation complète avec un mètre de recul (tuyaux, raccords). Ne photographiez pas uniquement la flaque d'eau.
+                </div>
+                <div class="file-upload-container" onclick="document.getElementById('photo').click();">
+                    <span class="file-upload-label" id="file-label">Cliquez ici pour ajouter une photo</span>
+                    <input type="file" id="photo" accept="image/*" required onchange="document.getElementById('file-label').textContent = this.files[0] ? this.files[0].name : 'Cliquez ici pour ajouter une photo';">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="submit-btn">Envoyer l'Alerte</button>
         </form>
     </div>
 
-<script>
-document.querySelector('form').addEventListener('submit', async function(event) {
-    event.preventDefault();
+    <div class="card" id="success-container" style="display: none;">
+        <p>Alerte transmise. Un technicien analyse la photo et vous rappelle.</p>
+        <button type="button" id="btn-retour" class="btn-retour">Nouvelle urgence</button>
+    </div>
 
-    if (document.getElementById('robot_check').value !== "") return;
+    <script>
+        document.getElementById('form-urgence').addEventListener('submit', async function(event) {
+            event.preventDefault();
 
-    const submitBtn = document.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = "Traitement et envoi...";
-    submitBtn.disabled = true;
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = "Envoi en cours...";
+            submitBtn.disabled = true;
 
-    try {
-        const nom = document.getElementById('nom').value;
-        const telephone = document.getElementById('telephone').value;
-        const probleme = document.getElementById('probleme').value;
-        
-        const photoInput = document.querySelector('input[type="file"]');
-        let photoData = null;
+            try {
+                const nom = document.getElementById('nom').value;
+                const telephone = document.getElementById('telephone').value;
+                const probleme = document.getElementById('probleme').value;
+                const fileInput = document.getElementById('photo').files[0];
 
-        if (photoInput.files && photoInput.files.length > 0) {
-            photoData = await new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 1024;
-                    let width = img.width;
-                    let height = img.height;
+                let photoData = "";
+                if (fileInput) {
+                    const reader = new FileReader();
+                    photoData = await new Promise((resolve) => {
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(fileInput);
+                    });
+                }
 
-                    if (width > MAX_WIDTH) {
-                        height = Math.round((height * MAX_WIDTH) / width);
-                        width = MAX_WIDTH;
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.7));
-                };
-                img.onerror = reject;
-                img.src = URL.createObjectURL(photoInput.files[0]);
-            });
-        }
+                const payload = { nom, telephone, probleme, photo: photoData };
 
-       const payload = { nom, telephone, probleme, photo: photoData };
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-const response = await fetch('/api/submit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-});
+                if (response.ok) {
+                    document.getElementById('form-container').style.display = 'none';
+                    document.getElementById('success-container').style.display = 'block';
+                } else {
+                    alert("Erreur de communication avec le serveur.");
+                }
+            } catch (error) {
+                alert("Erreur système : " + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
 
-        if (response.ok) {
-            alert("Demande envoyée avec succès.");
-            event.target.reset();
-        } else {
-            alert("Erreur de communication avec le serveur.");
-        }
-    } catch (error) {
-        alert("Erreur système : " + error.message);
-    } finally {
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-});
-</script>
-</body>
-</html>
+        document.getElementById('btn-retour').addEventListener('click', function() {
+            document.querySelector('form').reset();
+            document.getElementById('file-label').textContent = 'Cliquez ici pour ajouter une photo';
+            document.getElementById('success-container').style.display = 'none';
+            document.getElementById('form-container').style.display = 'block';
+        });
+    </script>
 </body>
 </html>

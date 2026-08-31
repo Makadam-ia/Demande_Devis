@@ -54,6 +54,7 @@
 
         input[type="text"],
         input[type="tel"],
+        input[type="email"],
         select,
         textarea {
             width: 100%;
@@ -67,6 +68,7 @@
 
         input[type="text"]:focus,
         input[type="tel"]:focus,
+        input[type="email"]:focus,
         select:focus,
         textarea:focus {
             border-color: #ef4444;
@@ -180,6 +182,11 @@
             </div>
 
             <div class="form-group">
+                <label for="email">Adresse e-mail :</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <div class="form-group">
                 <label for="categorie">Catégorie de l'urgence :</label>
                 <select id="categorie" name="categorie" required>
                     <option value="" disabled selected>Sélectionnez une option...</option>
@@ -228,6 +235,7 @@
             try {
                 const nom = document.getElementById('nom').value;
                 const telephone = document.getElementById('telephone').value;
+                const email = document.getElementById('email').value;
                 const categorie = document.getElementById('categorie').value;
                 const description = document.getElementById('probleme').value;
                 const problemeComplet = categorie + " - " + description;
@@ -270,7 +278,7 @@
                     });
                 }
 
-                const payload = { nom, telephone, probleme: problemeComplet, photo: photoData };
+                const payload = { nom, telephone, email, probleme: problemeComplet, photo: photoData };
 
                 const response = await fetch('/api/submit', {
                     method: 'POST',

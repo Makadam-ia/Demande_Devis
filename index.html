@@ -259,13 +259,13 @@
                 <label for="consentement">Je confirme nécessiter une intervention d'urgence et accepte la facturation des frais de déplacement inhérents.</label>
             </div>
 
-            <button type="submit" class="btn-primary" id="submit-btn">Envoyer l'Alerte</button>
+            <button type="submit" class="btn-primary" id="submit-btn" data-track="bouton-envoyer-alerte">Envoyer l'Alerte</button>
         </form>
     </div>
 
     <div class="card" id="success-container" style="display: none;">
         <p>Alerte transmise. Un technicien analyse la photo et vous rappelle immédiatement.</p>
-        <button type="button" id="btn-retour" class="btn-retour">Nouvelle urgence</button>
+        <button type="button" id="btn-retour" class="btn-retour" data-track="bouton-nouvelle-urgence">Nouvelle urgence</button>
     </div>
 
     <script>
@@ -339,7 +339,6 @@
                     photo: photoData 
                 };
 
-                // Si le chemin relatif '/api/submit' échoue, remplacer par l'URL complète du webhook n8n
                 const response = await fetch('https://portfoliohighgency.app.n8n.cloud/webhook/4a1614a7-25d5-461b-afbf-4e504720d70d', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -365,6 +364,43 @@
             document.getElementById('file-label').textContent = 'Cliquez ici pour ajouter une photo';
             document.getElementById('success-container').style.display = 'none';
             document.getElementById('form-container').style.display = 'block';
+        });
+
+        const SUPABASE_URL = 'https://zchxerepjpymjfcieyai.supabase.co';
+        const SUPABASE_ANON_KEY = 'VOTRE_ANON_KEY_SUPABASE';
+
+        document.addEventListener('click', async function(e) {
+            const target = e.target.closest('[data-track]');
+            if (!target) return;
+
+            let visiteurId = localStorage.getItem('visiteur_id');
+            if (!visiteurId) {
+                visiteurId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+                localStorage.setItem('visiteur_id', visiteurId);
+            }
+
+            const cible = target.getAttribute('data-track');
+            const page = window.location.pathname;
+
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/analytics_events`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({
+                        action: 'clic',
+                        cible: cible,
+                        page: page,
+                        visiteur: visiteurId
+                    })
+                });
+            } catch (err) {
+                console.error("Erreur tracking", err);
+            }
         });
     </script>
 </body>

@@ -268,7 +268,7 @@
         <button type="button" id="btn-retour" class="btn-retour" data-track="bouton-nouvelle-urgence">Nouvelle urgence</button>
     </div>
 
-   <script>
+    <script>
         document.getElementById('form-urgence').addEventListener('submit', async function(event) {
             event.preventDefault();
 
@@ -367,7 +367,7 @@
         });
 
         const SUPABASE_URL = 'https://zchxerepjpxmjfcieyai.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_5TbKVXQHBS_TeGRziWGp5g_tvAR4PKT';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjaHhlcmVwanB4bWpmY2lleWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3NTM2MzcsImV4cCI6MjEwMzMyOTYzN30.HSqHwBsFsM8s0zod-sdXhiKJCYTTYR7PRPjMytGQfFM';
 
         document.addEventListener('click', async function(e) {
             const target = e.target.closest('[data-track]');
@@ -403,3 +403,5 @@
             }
         });
     </script>
+</body>
+</html>

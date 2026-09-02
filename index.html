@@ -340,7 +340,7 @@
                 };
 
                 // Si le chemin relatif '/api/submit' échoue, remplacer par l'URL complète du webhook n8n
-                const response = await fetch('/api/submit', {
+                const response = await fetch('https://portfoliohighgency.app.n8n.cloud/webhook-test/4a1614a7-25d5-461b-afbf-4e504720d70d', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demande de Dépannage</title>
+    <title>Demande de Dépannage - Photo</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -116,15 +116,25 @@
             margin-bottom: 16px;
         }
 
+        .file-upload-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .file-upload-container {
             border: 2px dashed #d1d5db;
             border-radius: 8px;
-            padding: 20px;
+            padding: 16px;
             text-align: center;
             cursor: pointer;
             transition: border-color 0.2s;
             background-color: #f9fafb;
-            margin-bottom: 24px;
+            flex-grow: 1;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .file-upload-container:hover {
@@ -140,6 +150,16 @@
             color: #4b5563;
             cursor: pointer;
             font-weight: 500;
+            display: block;
+        }
+
+        #photo-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            display: none;
         }
 
         .btn-primary {
@@ -154,6 +174,7 @@
             cursor: pointer;
             transition: background-color 0.2s;
             min-height: 48px;
+            margin-top: 10px;
         }
 
         .btn-primary:hover {
@@ -243,10 +264,15 @@
                 <div class="alert-box">
                     <strong>Important :</strong> Photographiez l'installation complète avec un mètre de recul (tuyaux, raccords). Ne photographiez pas uniquement la flaque d'eau.
                 </div>
-                <div class="file-upload-container" onclick="document.getElementById('photo').click();">
-                    <span class="file-upload-label" id="file-label">Cliquez ici pour ajouter une photo</span>
-                    <input type="file" id="photo" accept="image/*" required onchange="document.getElementById('file-label').textContent = this.files[0] ? this.files[0].name : 'Cliquez ici pour ajouter une photo';">
+                
+                <div class="file-upload-wrapper">
+                    <img id="photo-preview" src="#" alt="Aperçu de la photo">
+                    <div class="file-upload-container" onclick="document.getElementById('photo').click();">
+                        <span class="file-upload-label" id="file-label">Cliquez pour prendre une photo ou choisir un fichier</span>
+                        <input type="file" id="photo" accept="image/*" capture="environment" required onchange="previewImage(this);">
+                    </div>
                 </div>
+
             </div>
 
             <div class="checkbox-group">
@@ -269,6 +295,27 @@
     </div>
 
     <script>
+        function previewImage(input) {
+            const preview = document.getElementById('photo-preview');
+            const label = document.getElementById('file-label');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    label.textContent = "Modifier la photo";
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = "#";
+                preview.style.display = 'none';
+                label.textContent = "Cliquez pour prendre une photo ou choisir un fichier";
+            }
+        }
+
         document.getElementById('form-urgence').addEventListener('submit', async function(event) {
             event.preventDefault();
 
@@ -349,11 +396,12 @@
                     document.getElementById('form-container').style.display = 'none';
                     document.getElementById('success-container').style.display = 'block';
                 } else {
-                    alert("Erreur de communication avec le serveur.");
+                    alert('Erreur de serveur. Veuillez réessayer.');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
                 }
             } catch (error) {
-                alert("Erreur réseau ou système.");
-            } finally {
+                alert('Erreur réseau. Veuillez vérifier votre connexion.');
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
             }
@@ -361,46 +409,13 @@
 
         document.getElementById('btn-retour').addEventListener('click', function() {
             document.getElementById('form-urgence').reset();
-            document.getElementById('file-label').textContent = 'Cliquez ici pour ajouter une photo';
+            document.getElementById('photo-preview').style.display = 'none';
+            document.getElementById('file-label').textContent = "Cliquez pour prendre une photo ou choisir un fichier";
             document.getElementById('success-container').style.display = 'none';
             document.getElementById('form-container').style.display = 'block';
-        });
-
-        const SUPABASE_URL = 'https://zchxerepjpxmjfcieyai.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjaHhlcmVwanB4bWpmY2lleWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3NTM2MzcsImV4cCI6MjEwMzMyOTYzN30.HSqHwBsFsM8s0zod-sdXhiKJCYTTYR7PRPjMytGQfFM';
-
-        document.addEventListener('click', async function(e) {
-            const target = e.target.closest('[data-track]');
-            if (!target) return;
-
-            let visiteurId = localStorage.getItem('visiteur_id');
-            if (!visiteurId) {
-                visiteurId = Math.random().toString(36).substring(2) + Date.now().toString(36);
-                localStorage.setItem('visiteur_id', visiteurId);
-            }
-
-            const cible = target.getAttribute('data-track');
-            const page = window.location.pathname;
-
-            try {
-                await fetch(`${SUPABASE_URL}/rest/v1/analytics_events`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify({
-                        action: 'clic',
-                        cible: cible,
-                        page: page,
-                        visiteur: visiteurId
-                    })
-                });
-            } catch (err) {
-                console.error("Erreur tracking", err);
-            }
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.textContent = "Envoyer l'Alerte";
+            submitBtn.disabled = false;
         });
     </script>
 </body>

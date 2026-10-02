@@ -21,6 +21,8 @@ function construirePayload(lead) {
     nom: lead.nom.trim(),
     email: lead.email.trim().toLowerCase(),
     telephone: lead.telephone.trim(),
+    adresse: (lead.adresse ?? '').trim(),
+    codePostalVille: (lead.codePostalVille ?? '').trim(),
     description: lead.description.trim(),
     urgence: lead.urgence.trim(),
   };

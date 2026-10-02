@@ -18,8 +18,10 @@ const MESSAGE_ERREUR = 'Une erreur est survenue lors de la transmission. Veuille
  *
  * Étape 1 (Besoin) → 2 (Détails) → 3 (Contact). Le payload final est transmis à
  * `envoyerLead` (fetch POST `X-Funnel-Token`) sous la forme
- * `{ nom, email, telephone, description, urgence }`, avec la `description`
- * **échappée** (anti-injection HTML).
+ * `{ nom, email, telephone, adresse, codePostalVille, description, urgence }`.
+ * Les données géographiques sont des **clés explicites** (`adresse`,
+ * `codePostalVille`) — elles ne sont plus concaténées dans `description`, qui ne
+ * porte que le texte libre échappé et les options (eau coupée, urgence, photo).
  */
 export default function QuoteForm() {
   const [etapeIndex, setEtapeIndex] = useState(0);
@@ -69,12 +71,12 @@ export default function QuoteForm() {
   };
 
   /**
-   * Compose la `description` transmise : bloc de contexte (adresse, cases,
-   * photo) + saisie, chaque valeur libre échappée contre l'injection HTML.
+   * Compose la `description` transmise : options (eau coupée, urgence, photo) +
+   * texte libre échappé. Les données géographiques en sont **retirées** : elles
+   * voyagent en clés dédiées (`adresse`, `codePostalVille`).
    */
   const construireDescription = () => {
     const contexte = [
-      `Adresse : ${echapperHtml(details.adresse.trim())}, ${echapperHtml(details.codePostal.trim())}`,
       `Arrivée d'eau générale coupée : ${cases.eauCoupee ? 'oui' : 'non'}`,
       `Intervention d'urgence confirmée : ${cases.urgence ? 'oui' : 'non'}`,
       `Photo du problème : ${photoNom ? echapperHtml(photoNom) : 'non fournie'}`,
@@ -92,6 +94,8 @@ export default function QuoteForm() {
       nom: contact.nom,
       email: contact.email,
       telephone: contact.telephone,
+      adresse: details.adresse,
+      codePostalVille: details.codePostal,
       description: construireDescription(),
       urgence: besoin,
     });

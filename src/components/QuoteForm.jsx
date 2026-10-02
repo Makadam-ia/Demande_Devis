@@ -119,6 +119,24 @@ export default function QuoteForm() {
     setEtapeIndex(2);
   };
 
+  /**
+   * Réinitialise entièrement le cycle de vie du formulaire (nouvelle demande) :
+   * masque l'écran de succès, ramène à l'étape initiale et vide toutes les
+   * données saisies — évite toute soumission en double.
+   */
+  const reinitialiser = () => {
+    setSucces(false);
+    setEtapeIndex(0);
+    setBesoin('');
+    setDetails({ description: '', adresse: '', codePostal: '' });
+    setCases({ eauCoupee: false, urgence: false });
+    setPhotoNom('');
+    setApercu('');
+    setContact({ nom: '', email: '', telephone: '' });
+    setIsLoading(false);
+    setErreur('');
+  };
+
   return (
     <section className="form" aria-label="Demande de devis">
       <div className="form__inner">
@@ -139,6 +157,9 @@ export default function QuoteForm() {
               <p className="success__text">
                 Un artisan analyse votre demande et vous rappelle sous 2 heures.
               </p>
+              <button type="button" className="success__reset" onClick={reinitialiser}>
+                Faire une nouvelle demande
+              </button>
             </div>
           ) : (
             <>

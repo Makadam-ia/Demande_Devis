@@ -659,6 +659,29 @@ select {
   color: var(--slate-500);
 }
 
+/* Bouton secondaire « Faire une nouvelle demande » (équiv. Tailwind :
+   mt-6 w-full bg-gray-100 text-gray-800 py-3 rounded-lg font-medium
+   hover:bg-gray-200 transition-colors). Hauteur ≥ 44 px (cible tactile). */
+.success__reset {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 24px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: #1f2937;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.success__reset:hover {
+  background: #e5e7eb;
+}
+
 .legal {
   margin-top: 16px;
   text-align: center;

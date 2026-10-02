@@ -1,17 +1,22 @@
-import DemandeDepannage from './components/DemandeDepannage.jsx';
+import Header from './components/Header.jsx';
+import ValueColumn from './components/ValueColumn.jsx';
+import QuoteForm from './components/QuoteForm.jsx';
 
 /**
- * Interface monolithique : une seule carte de formulaire, centrée.
+ * Page à écran partagé asymétrique.
  *
- * L'ancienne disposition « écran partagé » (proposition de valeur à gauche) et
- * le parcours de navigation par étapes (Besoin → Détails → Contact) ont été
- * supprimés au profit de ce formulaire vertical unique.
+ * - En-tête fixe transversal.
+ * - `main.layout` : empilement vertical sur mobile (valeur puis entonnoir),
+ *   grille deux colonnes 50/50 sur desktop.
  */
 export default function App() {
   return (
-    <main className="page">
-      <DemandeDepannage />
-    </main>
+    <>
+      <Header />
+      <main className="layout">
+        <ValueColumn />
+        <QuoteForm />
+      </main>
+    </>
   );
 }
-

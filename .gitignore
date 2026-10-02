@@ -1,0 +1,16 @@
+node_modules
+dist
+dist-ssr
+*.local
+
+# Variables d'environnement locales (jetons, URL d'ingestion)
+.env
+.env.local
+.env.*.local
+
+# Éditeurs / système
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.log

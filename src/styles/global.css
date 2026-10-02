@@ -1,0 +1,265 @@
+/* ==========================================================================
+   Entonnoir CRM Artisan — formulaire monolithique « Demande de Dépannage »
+   Une seule carte centrée sur fond clair (aucune colonne, aucune étape).
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #f4f6f8;
+  color: #333333;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Conteneur : centre la carte sur fond clair. */
+.page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+}
+
+/* --------------------------------------------------------------- Carte */
+
+.card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 480px;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.card__title {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 24px;
+  color: #1a1a1a;
+}
+
+/* --------------------------------------------------------------- Champs */
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #4b5563;
+}
+
+input[type='text'],
+input[type='tel'],
+input[type='email'],
+select,
+textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #333333;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+input[type='text']:focus,
+input[type='tel']:focus,
+input[type='email']:focus,
+select:focus,
+textarea:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* ----------------------------------------------------- Cases à cocher */
+
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  background-color: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.checkbox-group input[type='checkbox'] {
+  margin-right: 12px;
+  margin-top: 3px;
+  transform: scale(1.2);
+  accent-color: #ef4444;
+  cursor: pointer;
+}
+
+.checkbox-group label {
+  font-weight: 500;
+  margin-bottom: 0;
+  line-height: 1.4;
+  cursor: pointer;
+  font-size: 13.5px;
+}
+
+/* ------------------------------------------- Zone photo + avertissement */
+
+.alert-box {
+  background-color: #fffbeb;
+  border-left: 4px solid #f59e0b;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #92400e;
+  margin-bottom: 16px;
+}
+
+.file-upload-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.file-upload-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  min-height: 80px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #f9fafb;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.file-upload-container:hover {
+  border-color: #ef4444;
+}
+
+.file-upload-container input[type='file'] {
+  display: none;
+}
+
+.file-upload-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+#photo-preview {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+}
+
+/* ------------------------------------------------------------- Boutons */
+
+.btn-primary {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 10px;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ef4444;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-retour {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  background-color: #f1f3f5;
+  color: #495057;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-retour:hover {
+  background-color: #e2e6ea;
+}
+
+/* ---------------------------------------------------- Erreur et succès */
+
+.form-error {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+.success {
+  text-align: center;
+}
+
+.success__text {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: #1f2937;
+}
+
+/* ------------------------------------------------------- Adaptatif */
+
+@media (max-width: 520px) {
+  .page {
+    padding: 20px 12px;
+  }
+
+  .card {
+    padding: 22px;
+  }
+}

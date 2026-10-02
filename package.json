@@ -1,0 +1,20 @@
+{
+  "name": "entonnoir-crm-artisan",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Entonnoir de génération de leads (demande de devis) pour le CRM artisan — React + Vite.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
+    "vite": "^5.4.10"
+  }
+}

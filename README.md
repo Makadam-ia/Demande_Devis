@@ -56,6 +56,17 @@ l'en-tête `X-Funnel-Token`. Payload `{ nom, email, telephone, description, urge
 `urgence` ← étape Besoin, `description` ← étape Détails (contexte + saisie,
 échappés), le reste ← étape Contact.
 
+### Photo du problème
+
+Quand une photo a été choisie à l'étape Détails, le fichier est **compressé côté
+navigateur** (`src/lib/photo.js` : 1600 px max, WebP/JPEG jusqu'à ~300 Ko, comme
+les médias du CRM) puis encodé en **Base64 pur**. Le payload est enrichi de
+`photo_base64`, `photo_nom` et `photo_type`. L'Edge Function `ingestion-lead`
+décode l'image, la dépose dans le bucket Supabase privé `interventions`
+(`<id_intervention>/avant/<uuid>.<ext>`) et la rattache à l'intervention
+(`interventions.medias` + `photo_avant`). Une photo illisible ou trop lourde est
+**ignorée** : le lead est transmis sans pièce jointe plutôt que d'être perdu.
+
 ### Configuration
 
 Copiez `.env.example` en `.env.local` :
@@ -76,6 +87,7 @@ src/
 ├── styles/global.css
 ├── lib/
 │   ├── ingestion.js              # fetch POST + X-Funnel-Token
+│   ├── photo.js                  # compression + Base64 de la photo
 │   ├── sanitize.js               # échappement HTML
 │   └── validation.js             # regex e-mail / téléphone
 └── components/

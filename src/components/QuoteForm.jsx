@@ -29,6 +29,7 @@ export default function QuoteForm() {
   const [details, setDetails] = useState({ description: '', adresse: '', codePostal: '' });
   const [cases, setCases] = useState({ eauCoupee: false, urgence: false });
   const [photoNom, setPhotoNom] = useState('');
+  const [photoFichier, setPhotoFichier] = useState(null);
   const [apercu, setApercu] = useState('');
   const [contact, setContact] = useState({ nom: '', email: '', telephone: '' });
   const [isLoading, setIsLoading] = useState(false);
@@ -61,10 +62,14 @@ export default function QuoteForm() {
   const choisirPhoto = (fichier) => {
     if (!fichier) {
       setPhotoNom('');
+      setPhotoFichier(null);
       setApercu('');
       return;
     }
+    // Le fichier est conservé pour être transmis (compressé en Base64) lors de
+    // l'envoi final ; l'aperçu n'est qu'un rendu local.
     setPhotoNom(fichier.name);
+    setPhotoFichier(fichier);
     const lecteur = new FileReader();
     lecteur.onload = (evenement) => setApercu(evenement.target.result);
     lecteur.readAsDataURL(fichier);
@@ -98,6 +103,7 @@ export default function QuoteForm() {
       codePostalVille: details.codePostal,
       description: construireDescription(),
       urgence: besoin,
+      photo: photoFichier,
     });
 
     setIsLoading(false);
@@ -131,6 +137,7 @@ export default function QuoteForm() {
     setDetails({ description: '', adresse: '', codePostal: '' });
     setCases({ eauCoupee: false, urgence: false });
     setPhotoNom('');
+    setPhotoFichier(null);
     setApercu('');
     setContact({ nom: '', email: '', telephone: '' });
     setIsLoading(false);

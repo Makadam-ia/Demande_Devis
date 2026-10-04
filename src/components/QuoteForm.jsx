@@ -18,10 +18,14 @@ const MESSAGE_ERREUR = 'Une erreur est survenue lors de la transmission. Veuille
  *
  * Étape 1 (Besoin) → 2 (Détails) → 3 (Contact). Le payload final est transmis à
  * `envoyerLead` (fetch POST `X-Funnel-Token`) sous la forme
- * `{ nom, email, telephone, adresse, codePostalVille, description, urgence }`.
+ * `{ nom, email, telephone, adresse, codePostalVille, description, urgence }`,
+ * enrichi — si une photo a été choisie — de `photo_base64`, `photo_nom` et
+ * `photo_type`.
  * Les données géographiques sont des **clés explicites** (`adresse`,
  * `codePostalVille`) — elles ne sont plus concaténées dans `description`, qui ne
- * porte que le texte libre échappé et les options (eau coupée, urgence, photo).
+ * porte que le texte libre échappé et les options (eau coupée, urgence). La photo
+ * est transmise à part (`photo_base64`, `photo_nom`, `photo_type`) puis stockée
+ * dans le bucket `interventions` par l'Edge Function.
  */
 export default function QuoteForm() {
   const [etapeIndex, setEtapeIndex] = useState(0);
@@ -76,15 +80,16 @@ export default function QuoteForm() {
   };
 
   /**
-   * Compose la `description` transmise : options (eau coupée, urgence, photo) +
-   * texte libre échappé. Les données géographiques en sont **retirées** : elles
-   * voyagent en clés dédiées (`adresse`, `codePostalVille`).
+   * Compose la `description` transmise : options (eau coupée, urgence) + texte
+   * libre échappé. Les données géographiques en sont **retirées** : elles
+   * voyagent en clés dédiées (`adresse`, `codePostalVille`). La photo n'y figure
+   * **plus** : elle est transmise séparément (`photo_base64`, `photo_nom`,
+   * `photo_type`) et déposée dans le bucket par l'Edge Function.
    */
   const construireDescription = () => {
     const contexte = [
       `Arrivée d'eau générale coupée : ${cases.eauCoupee ? 'oui' : 'non'}`,
       `Intervention d'urgence confirmée : ${cases.urgence ? 'oui' : 'non'}`,
-      `Photo du problème : ${photoNom ? echapperHtml(photoNom) : 'non fournie'}`,
     ];
     return `${contexte.join('\n')}\n\n${echapperHtml(details.description.trim())}`;
   };

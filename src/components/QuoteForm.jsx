@@ -80,18 +80,26 @@ export default function QuoteForm() {
   };
 
   /**
-   * Compose la `description` transmise : options (eau coupée, urgence) + texte
-   * libre échappé. Les données géographiques en sont **retirées** : elles
-   * voyagent en clés dédiées (`adresse`, `codePostalVille`). La photo n'y figure
-   * **plus** : elle est transmise séparément (`photo_base64`, `photo_nom`,
-   * `photo_type`) et déposée dans le bucket par l'Edge Function.
+   * Compose la `description` transmise, **structurée** avec des sauts de ligne
+   * (`\n`) pour une lecture directe dans le CRM (le composant de la fiche rend
+   * le texte en `whitespace-pre-wrap`) :
+   *
+   *   [EAU COUPÉE] : Oui|Non
+   *   [URGENCE] : Confirmée|Non
+   *   [DÉTAILS] : <texte libre du client>
+   *
+   * Les données géographiques en sont **retirées** : elles voyagent en clés
+   * dédiées (`adresse`, `codePostalVille`). La photo n'y figure **plus** : elle
+   * est transmise séparément (`photo_base64`, `photo_nom`, `photo_type`) et
+   * déposée dans le bucket par l'Edge Function.
    */
   const construireDescription = () => {
-    const contexte = [
-      `Arrivée d'eau générale coupée : ${cases.eauCoupee ? 'oui' : 'non'}`,
-      `Intervention d'urgence confirmée : ${cases.urgence ? 'oui' : 'non'}`,
+    const lignes = [
+      `[EAU COUPÉE] : ${cases.eauCoupee ? 'Oui' : 'Non'}`,
+      `[URGENCE] : ${cases.urgence ? 'Confirmée' : 'Non'}`,
+      `[DÉTAILS] : ${echapperHtml(details.description.trim())}`,
     ];
-    return `${contexte.join('\n')}\n\n${echapperHtml(details.description.trim())}`;
+    return lignes.join('\n');
   };
 
   /** Envoi final. Prévient la double soumission (`isLoading`). */
